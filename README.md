@@ -20,6 +20,7 @@ License
 
 ### what is tuplet loss
 
+<img src="docs/images/tuplet_loss.jpg" alt="Triplet_loss Versue Tuplet_loss" height="498"/>
 
 ### Installation
 Clone the repository:
