@@ -22,6 +22,31 @@ License
 
 <img src="docs/images/tuplet_loss.jpg" alt="Triplet_loss Versue Tuplet_loss" height="498"/>
 
+
+### Dataset
+I used a custom dataset for training.
+
+### training metrics
+- Train_Loss
+- Val_Acc
+- Val_Prec
+- Val_Rec
+- Val_F1
+- Val_TPR
+- Val_FPR
+- Val_FNR
+
+### Download pretrained weigths
+the pretrained weight is located on `weight` directory.
+
+### Finding Optimal Threshold based on distance similarity
+Test version1 dataset unique samples = 7998
+
+=== Threshold Search Results ===
+Optimal Threshold: 0.9422
+Best FPR: 0.0026, Best FNR: 0.0132, Minimum Cost: 0.0048
+
+
 ### Installation
 Clone the repository:
 
