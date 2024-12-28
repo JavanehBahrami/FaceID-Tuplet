@@ -23,8 +23,42 @@ License
 <img src="docs/images/tuplet_loss.jpg" alt="Triplet_loss Versue Tuplet_loss" height="498"/>
 
 
+### root structure
+
+
 ### Dataset
 I used a custom dataset for training.
+
+#### Data preparation
+```
+Train Directory format
+    |---nationalID1
+    |     |--img1
+    |     |--img2
+    |     |...
+    |     |--img10
+    |---nationalID2
+    |     |--img1
+    |     |--img2
+    |     |...
+    |     |--img10
+    |...
+    |---nationalIDN
+    |     |--img1
+    |     |--img2
+    |     |...
+    |     |--img10
+```
+
+
+
+
+### Resources:
+I used this device.
+
+GPU: RTX-3060
+Cuda version : 11.8
+
 
 ### training metrics
 - Train_Loss
