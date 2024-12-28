@@ -29,6 +29,10 @@ License
 ### Dataset
 I used a custom dataset for training.
 
+#### Dataset Distibution
+number of train: 
+number of validation: 
+
 #### Data preparation
 ```
 Train Directory format
