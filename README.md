@@ -82,11 +82,19 @@ Cuda version : 11.8
 the pretrained weight is located on `weight` directory.
 
 ### Finding Optimal Threshold based on distance similarity
-Test version1 dataset unique samples = 7998
+Test version1 dataset including 7998 unique samples or unique national IDs
 
 === Threshold Search Results ===
+
 Optimal Threshold: `0.9422`
-Best FPR: 0.0026, Best FNR: 0.0132, Minimum Cost: 0.0048
+
+
+|   Best FPR    |   Best FNR   |   Minimum Cost   |
+|---------------|--------------|------------------|
+|    0.0026     |    0.0132    |     0.0048       |
+
+
+
 
 
 ### Installation
