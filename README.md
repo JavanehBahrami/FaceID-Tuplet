@@ -69,14 +69,11 @@ Cuda version : 11.8
 
 
 ### training metrics
-- Train_Loss
-- Val_Acc
-- Val_Prec
-- Val_Rec
-- Val_F1
-- Val_TPR
-- Val_FPR
-- Val_FNR
+Training log
+
+|   metric1  |  metric2  |  metric3 | metric4 | metric5 | metric6 | metric7 | metric8 |
+|------------|-----------|----------|---------|---------|---------|---------|---------|
+| Train_Loss |  Val_Acc  | Val_Prec | Val_Rec | Val_F1  | Val_TPR | Val_FPR | Val_FNR |
 
 ### Download pretrained weigths
 the pretrained weight is located on `weight` directory.
