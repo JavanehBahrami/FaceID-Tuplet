@@ -22,12 +22,17 @@ License
 
 <img src="docs/images/tuplet_loss.jpg" alt="Triplet_loss Versue Tuplet_loss" height="498"/>
 
+here I used 8 tuplet of negative samples.
+
+--- Hard negative instead of random negative
 
 ### root structure
 
 
 ### Dataset
 I used a custom dataset for training.
+
+faces for each sample is cropped with MTCNN face detection model
 
 #### Dataset Distibution
 number of train: 
@@ -37,23 +42,22 @@ number of validation:
 ```
 Train Directory format
     |---nationalID1
-    |     |--img1
-    |     |--img2
+    |     |--cropped_face_img1
+    |     |--cropped_face_img2
     |     |...
-    |     |--img10
+    |     |--cropped_face_img10
     |---nationalID2
-    |     |--img1
-    |     |--img2
+    |     |--cropped_face_img1
+    |     |--cropped_face_img2
     |     |...
-    |     |--img10
+    |     |--cropped_face_img10
     |...
     |---nationalIDN
-    |     |--img1
-    |     |--img2
+    |     |--cropped_face_img1
+    |     |--cropped_face_img2
     |     |...
-    |     |--img10
+    |     |--cropped_face_img10
 ```
-
 
 
 
@@ -81,7 +85,7 @@ the pretrained weight is located on `weight` directory.
 Test version1 dataset unique samples = 7998
 
 === Threshold Search Results ===
-Optimal Threshold: 0.9422
+Optimal Threshold: `0.9422`
 Best FPR: 0.0026, Best FNR: 0.0132, Minimum Cost: 0.0048
 
 
