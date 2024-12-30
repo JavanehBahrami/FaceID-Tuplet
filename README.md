@@ -64,8 +64,10 @@ Train Directory format
 ### Resources:
 I used this device.
 
-GPU: RTX-3060
-Cuda version : 11.8
+
+|      GPU     | RTX-3060 |
+|--------------|----------|
+| Cuda version |   11.8   |
 
 
 ### training metrics
