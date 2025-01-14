@@ -126,7 +126,6 @@ def train_model(config, model, checkpoint_abs_path):
                 f"FNR={val_fnr:.4f}\n"
             )
 
-
         # Learning rate scheduler step
         if scheduler:
             scheduler.step()
@@ -164,9 +163,6 @@ if __name__ == "__main__":
                              config.train.transform.normalize.std)
     ])
 
-    print(f"batch_size: {config.train.batch_size}")
-    print(f"num_negatives: {config.train.num_negatives}")
-
     dataset = TupletDataset(data_dir=config.train.data_dir,
                             transform=transform,
                             num_negatives=config.train.num_negatives)
@@ -176,7 +172,6 @@ if __name__ == "__main__":
                             shuffle=True,
                             num_workers=8, 
                             pin_memory=True)
-    print("------   custom dataloader is created   -------------")
 
     model = load_model(device)
 
@@ -189,8 +184,6 @@ if __name__ == "__main__":
                                           gamma=config.train.lr_gamma)
     scaler = GradScaler()
 
-    print(f"number of epochs: {config.train.num_epochs}")
-    print(f"checkpoint number: {config.train.train_index}")
     checkpoint_abs_path = config.train.checkpoint_abs_path
 
     checkpoint_abs_path = f"{checkpoint_abs_path}/test{config.train.train_index}_tuplet_loss"
