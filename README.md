@@ -36,6 +36,8 @@ The combination of multiple negatives and hard negative mining allows for more d
 
 ### root structure
 The directory structure of this repository is organized as follows:
+
+```bash
 root:
     |__ finetune.py
     |__ inference.py
@@ -43,6 +45,7 @@ root:
     |__ docs/
     |__ readme.md
 
+```
 
 
 ### Dataset
