@@ -1,18 +1,23 @@
 device: "cuda"  # or "cpu" if no GPU available
-data_dir: "/hdd_dr/dataset/VAP/project/FV/v2/train/javaneh_small_ekyc_train"
-batch_size: 64
-num_negatives: 8
-num_epochs: 65
-train_index: 1
-checkpoint_abs_path: "checkpoints"
-learning_rate: 0.001
-weight_decay: 0.00001
-lr_step_size: 10
-lr_gamma: 0.5
-loss_margin: 0.5
-loss_k: 2
-transform:
-  resize: [160, 160]
-  normalize:
-    mean: [0.5, 0.5, 0.5]
-    std: [0.5, 0.5, 0.5]
+
+train:
+  data_dir: "/hdd_dr/dataset/VAP/project/FV/v2/train/javaneh_small_ekyc_train"
+  batch_size: 64
+  num_negatives: 8
+  num_epochs: 65
+  train_index: 1
+  checkpoint_abs_path: "checkpoints"
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  lr_step_size: 10
+  lr_gamma: 0.5
+  loss_margin: 0.5
+  loss_k: 2
+  transform:
+    resize: [160, 160]
+    normalize:
+      mean: [0.5, 0.5, 0.5]
+      std: [0.5, 0.5, 0.5]
+
+inference:
+

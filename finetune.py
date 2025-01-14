@@ -16,8 +16,8 @@ from utils.evaluation_metrics import calculate_metrics
 from utils.loss_utils import tuplet_loss
 
 
-def load_model(config):
-    model = InceptionResnetV1(pretrained='vggface2', classify=False).to(config.device)
+def load_model(device):
+    model = InceptionResnetV1(pretrained='vggface2', classify=False).to(device)
     logger.info("pre-trained model is loaded successfully.")
 
     # Unfreeze all layers
@@ -63,7 +63,7 @@ def _save_checkpoint(checkpoint_abs_path, saved_params):
 
 def train_model(config, model, checkpoint_abs_path):
     logger.info("-------    start training tuplet loss    ----------")
-    for epoch in range(1, config.num_epochs + 1):
+    for epoch in range(1, config.train.num_epochs + 1):
         model.train()
         total_loss = 0
         y_true_train, y_pred_train = [], []
@@ -79,14 +79,14 @@ def train_model(config, model, checkpoint_abs_path):
                 
                 # Forward pass for negatives
                 if negatives.size(0) > 0:
-                    negative_embs = model(negatives.view(-1, 3, config.transform.resize[0], config.transform.resize[1])).view(negatives.size(0), negatives.size(1), -1)
+                    negative_embs = model(negatives.view(-1, 3, config.train.transform.resize[0], config.train.transform.resize[1])).view(negatives.size(0), negatives.size(1), -1)
                     
                     # Call the tuplet_loss function to calculate the loss
                     loss = tuplet_loss(anchor_emb,
                                        positive_emb,
                                        negative_embs,
-                                       margin=config.loss_margin,
-                                       k=config.loss_k)
+                                       margin=config.train.loss_margin,
+                                       k=config.train.loss_k)
                     
                     # Calculate metrics
                     pos_dist = F.pairwise_distance(anchor_emb, positive_emb)
@@ -111,14 +111,21 @@ def train_model(config, model, checkpoint_abs_path):
             val_prec, val_rec, val_f1, val_tpr, val_fpr, val_fnr, val_acc = calculate_metrics(y_true_train,
                                                                                               y_pred_train)
 
-        print(f"Epoch {epoch}: Loss={total_loss / len(dataloader):.4f}, Acc={val_acc:.4f},
-              Prec={val_prec:.4f}, Rec={val_rec:.4f}, "
-              f"F1={val_f1:.4f}, TPR={val_tpr:.4f}, FPR={val_fpr:.4f}, FNR={val_fnr:.4f}")
+        print(
+            f"Epoch {epoch}: Loss={total_loss / len(dataloader):.4f}, "
+            f"Acc={val_acc:.4f}, Prec={val_prec:.4f}, Rec={val_rec:.4f}, "
+            f"F1={val_f1:.4f}, TPR={val_tpr:.4f}, FPR={val_fpr:.4f}, "
+            f"FNR={val_fnr:.4f}"
+        )
 
         with open(log_file, "a") as log:
-            log.write(f"Epoch {epoch}, Loss={total_loss / len(dataloader):.4f}, Acc={val_acc:.4f},
-                      Prec={val_prec:.4f}, " f"Rec={val_rec:.4f}, F1={val_f1:.4f}, TPR={val_tpr:.4f},
-                      FPR={val_fpr:.4f}, FNR={val_fnr:.4f}\n")
+            log.write(
+                f"Epoch {epoch}, Loss={total_loss / len(dataloader):.4f}, "
+                f"Acc={val_acc:.4f}, Prec={val_prec:.4f}, Rec={val_rec:.4f}, "
+                f"F1={val_f1:.4f}, TPR={val_tpr:.4f}, FPR={val_fpr:.4f}, "
+                f"FNR={val_fnr:.4f}\n"
+            )
+
 
         # Learning rate scheduler step
         if scheduler:
@@ -146,48 +153,48 @@ if __name__ == "__main__":
         config = Box(config_dict)
 
     device = torch.device(config.device if torch.cuda.is_available() else "cpu")
-    logger.info("Available Device: {device}")
+    logger.info(f"Available Device: {device}")
 
     # Image transformations
     transform = transforms.Compose([
-        transforms.Resize((config.transform.resize[0],
-                           config.transform.resize[1])),
+        transforms.Resize((config.train.transform.resize[0],
+                           config.train.transform.resize[1])),
         transforms.ToTensor(),
-        transforms.Normalize(config.transform.normalize.mean,
-                             config.transform.normalize.std)
+        transforms.Normalize(config.train.transform.normalize.mean,
+                             config.train.transform.normalize.std)
     ])
 
-    print(f"batch_size: {config.batch_size}")
-    print(f"num_negatives: {config.num_negatives}")
+    print(f"batch_size: {config.train.batch_size}")
+    print(f"num_negatives: {config.train.num_negatives}")
 
-    dataset = TupletDataset(data_dir=config.data_dir,
+    dataset = TupletDataset(data_dir=config.train.data_dir,
                             transform=transform,
-                            num_negatives=config.num_negatives)
+                            num_negatives=config.train.num_negatives)
 
     dataloader = DataLoader(dataset,
-                            batch_size=config.batch_size,
+                            batch_size=config.train.batch_size,
                             shuffle=True,
                             num_workers=8, 
                             pin_memory=True)
     print("------   custom dataloader is created   -------------")
 
-    model = load_model(config)
+    model = load_model(device)
 
     optimizer = optim.Adam(model.parameters(),
-                           lr=config.learning_rate,
-                           weight_decay=config.weight_decay)
+                           lr=config.train.learning_rate,
+                           weight_decay=config.train.weight_decay)
 
     scheduler = optim.lr_scheduler.StepLR(optimizer,
-                                          step_size=config.lr_step_size,
-                                          gamma=config.lr_gamma)
+                                          step_size=config.train.lr_step_size,
+                                          gamma=config.train.lr_gamma)
     scaler = GradScaler()
 
-    print(f"number of epochs: {config.num_epochs}")
-    print(f"checkpoint number: {config.train_index}")
-    checkpoint_abs_path = config.checkpoint_abs_path
+    print(f"number of epochs: {config.train.num_epochs}")
+    print(f"checkpoint number: {config.train.train_index}")
+    checkpoint_abs_path = config.train.checkpoint_abs_path
 
-    checkpoint_abs_path = f"{checkpoint_abs_path}/test{config.train_index}_tuplet_loss"
-    log_file = os.path.join(checkpoint_abs_path, f"training_log{config.train_index}.txt")
+    checkpoint_abs_path = f"{checkpoint_abs_path}/test{config.train.train_index}_tuplet_loss"
+    log_file = os.path.join(checkpoint_abs_path, f"training_log{config.train.train_index}.txt")
     os.makedirs(checkpoint_abs_path, exist_ok=True)
 
     with open(log_file, "a") as log:
