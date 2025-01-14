@@ -141,6 +141,10 @@ git clone https://github.com/your-username/face-verification-tuplet-loss.git
 pip install -r requirements.txt
 ```
 
+**Note: Install PyTorch Based on CUDA Version**
+To ensure compatibility with your system's CUDA version, you need to install the appropriate version of torch.
+Since my CUDA version is `11.8`, I installed `torch==2.0.1+cu118`.
+
 #### Training the Model (Fine tune):
 To fine tune the model, run this:
 ```bash
