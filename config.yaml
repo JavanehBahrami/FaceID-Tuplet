@@ -20,4 +20,9 @@ train:
       std: [0.5, 0.5, 0.5]
 
 inference:
+  weight_dir: "/hdd_dr/my_resume/my_repo/FaceID-Tuplet/weight"
+  checkpoint_name: "checkpoint_epoch56_loss0.0308_valAcc1.0000_valTPR1.0000_valFPR0.0000_valFNR0.0000.pth"
+  test_dir: "docs/images/test"
+  opt_threshold: 0.9422
+  output_csv: "fv_results.csv"
 

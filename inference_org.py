@@ -5,10 +5,8 @@ import pandas as pd
 import csv
 import matplotlib.pyplot as plt
 import yaml
-import string
 import pdb
 
-from torchvision import transforms
 from box import Box
 from loguru import logger
 from facenet_pytorch import InceptionResnetV1
@@ -21,30 +19,35 @@ def load_model(device, checkpoint_path):
     model = InceptionResnetV1(pretrained='vggface2', classify=False).to(device)
     logger.info("pre-trained model is loaded successfully without classifier layer.")
 
-    logger.info(f"Checkpoint path: {checkpoint_path}")
+    # Load the fine-tuned checkpoint
+    # checkpoint_name = 'checkpoint_epoch56_loss0.0308_valAcc1.0000_valTPR1.0000_valFPR0.0000_valFNR0.0000.pth'
+    # checkpoint_path = f'/hdd_dr/dataset/VAP/project/FV/replace_FV_model/facenet_pytorch/examples2/chkp/test29_tuplet_loss/{checkpoint_name}'
+    logger.info(f"Checkpoint loaded: {checkpoint_path}")
     checkpoint = torch.load(checkpoint_path, map_location=device)
     model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()  # Set model to evaluation mode
     logger.info("Checkpoint is loaded successfully.")
+    print("----------------------------------------------------------------------------------")
 
     return model
 
 
-def get_face_embedding(image_path, transform, model, device):
-    """Extracts the embedding of a given image using the specified transform."""
+
+# Function to extract face embeddings
+def get_face_embedding(image_path):
+    """Extracts the embedding of a given image."""
     try:
         img = Image.open(image_path).convert('RGB')
+        img = img.resize((160, 160))  # Resize image to 160x160
     except Exception as e:
         print(f"Error loading image {image_path}: {e}")
         return None
 
-    # Apply the same transformations as in train.py
-    img_tensor = transform(img).unsqueeze(0).to(device)  # Shape: (1, 3, 160, 160)
-
     with torch.no_grad():
+        img_tensor = torch.tensor(np.array(img)).permute(2, 0, 1).float() / 255.0  # Normalize image
+        img_tensor = img_tensor.unsqueeze(0).to(device)  # Add batch dimension
         face_embedding = model(img_tensor).cpu()
     return face_embedding
-
 
 # Function to evaluate pairs and log results to a CSV
 def compute_inference_metrics(predictions, labels):
@@ -68,6 +71,7 @@ def compute_inference_metrics(predictions, labels):
     fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
     fnr = fn / (fn + tp) if (fn + tp) > 0 else 0
 
+    # Return metrics
     return {
         "FP": fp,
         "FN": fn,
@@ -79,7 +83,7 @@ def compute_inference_metrics(predictions, labels):
 
 
 
-def evaluate_and_log_pairs(embeddings, labels, folder_names, pairs_list, threshold=0.9422, output_csv="fv_results.csv"):
+def evaluate_and_log_pairs(embeddings, labels, folder_names, pairs_list, threshold=0.96, output_csv="fv_results.csv"):
     """
     Evaluates all pairs using the given threshold and logs the results into a properly formatted CSV file.
 
@@ -98,54 +102,73 @@ def evaluate_and_log_pairs(embeddings, labels, folder_names, pairs_list, thresho
     
     # Temporary storage for rows
     rows = []
-    print(f"--- labels: {labels}")
-    for idx, ((embedding1, embedding2), label, folder_name, str_pair) in enumerate(zip(embeddings, labels, folder_names, pairs_list)):
-        elements = str_pair.strip('[]').split(', ')
-        # Convert to a tuple
-        pair = tuple(elements)
+
+    for idx, ((embedding1, embedding2), label, folder_name, pair) in enumerate(zip(embeddings, labels, folder_names, pairs_list)):
         if embedding1 is None or embedding2 is None:
             print(f"Skipping pair {idx + 1}: Missing embedding(s).")
-                    # Store the row
-            rows.append([folder_name, pair[0], "Missing Embedding(s)", "N/A", "N/A", label])
-            rows.append([folder_name, pair[1], "Missing Embedding(s)", "N/A", "N/A", label])
+            rows.append([folder_name, pair, "Missing Embedding(s)", "N/A", "N/A", label])
             continue
 
         # Compute distance and prediction
         distance = (embedding1 - embedding2).norm().item()
         prediction = 1 if distance < threshold else 0
         
-        fv_prediction = "match" if prediction == 1 else "mismatch"
+        fv_result = "match" if prediction == 1 else "mismatch"
         ground_truth = "match" if label == 1 else "mismatch"
-        print(f">>> label: {label}, ground_truth: {ground_truth}, prediction: {prediction}, distance: {distance}")
 
         # Determine conflict
-        conflict = 1 if fv_prediction != ground_truth else 0
+        conflict = 1 if fv_result != ground_truth else 0
 
-
-        # pdb.set_trace()
-        rows.append([folder_name, pair[0], pair[1], fv_prediction, ground_truth, conflict, label])
-        print(f"Folder: {folder_name}, Pairs: {pair[0]}, Pairs: {pair[1]}, FV Prediction: {fv_prediction}, Ground Truth: {ground_truth}, Conflict: {conflict}, label: {label}")
+        # Store the row
+        rows.append([folder_name, pair, fv_result, ground_truth, conflict, label])
+        print(f"Folder: {folder_name}, Pair: {pair}, FV Result: {fv_result}, Ground Truth: {ground_truth}, Conflict: {conflict}")
 
     # Create DataFrame
-    columns = ["Folder Name", "Pair1", "Pair2", "FV Prediction", "Ground Truth", "Conflict", "Label"]
+    columns = ["Folder Name", "Pair National IDs", "FV Result", "Ground Truth", "Conflict", "Label"]
     df = pd.DataFrame(rows, columns=columns)
 
     # Remove duplicate rows based on "Pair National IDs"
-    # df.drop_duplicates(subset=["Pairs"], inplace=True)
+    df.drop_duplicates(subset=["Pair National IDs"], inplace=True)
 
     # Save the final deduplicated DataFrame to CSV
     df.to_csv(output_csv, sep=";", index=False)
     print(f"\nFinal results logged to {output_csv}\n--- Evaluation Complete ---\n")
 
+    # Compute metrics on deduplicated data
+    predictions = [1 if row["FV Result"] == "match" else 0 for _, row in df.iterrows()]
+    labels = df["Label"].tolist()
+
+    metrics = compute_inference_metrics(predictions, labels)
+    print("\n--- Inference Metrics After Removing Duplicates ---")
+    print(f"False Positives (FP): {metrics['FP']}")
+    print(f"False Negatives (FN): {metrics['FN']}")
+    print(f"False Positive Rate (FPR): {metrics['FPR']:.4f}")
+    print(f"False Negative Rate (FNR): {metrics['FNR']:.4f}")
+    print(f"True Positives (TP): {metrics['TP']}")
+    print(f"True Negatives (TN): {metrics['TN']}")
+
+    # Compute distribution of matching and non-matching pairs
+    num_matching = labels.count(1)
+    num_non_matching = labels.count(0)
+    total_pairs = len(labels)
+
+    print(f"\n--- Pair Distribution ---")
+    print(f"Matching Pairs: {num_matching} ({num_matching / total_pairs * 100:.2f}%)")
+    print(f"Non-Matching Pairs: {num_non_matching} ({num_non_matching / total_pairs * 100:.2f}%)")
+
+    # Visualize distribution
+    # Save distribution as a pie chart
+    plt.figure(figsize=(6, 6))
+    plt.pie([num_matching, num_non_matching], labels=["Matching", "Non-Matching"], autopct='%1.1f%%', startangle=90, colors=["#4CAF50", "#F44336"])
+    plt.title("Pair Distribution")
+    output_image = "pair_distribution.png"
+    plt.savefig(output_image)  # Save the chart as a PNG file
+    plt.close()  # Close the plot to free memory
+    print(f"Pair distribution pie chart saved to {output_image}.")
 
 
-def process_person_folder(person_folder,
-                          embeddings,
-                          labels,
-                          folder_names,
-                          pairs_list,
-                          model,
-                          transform, device):
+# Process a folder to generate pairs and collect embeddings
+def process_person_folder(person_folder, embeddings, labels, folder_names, pairs_list):
     """Extract embeddings and generate pairs for evaluation."""
     files = os.listdir(person_folder)
     files = sorted(files)
@@ -153,10 +176,11 @@ def process_person_folder(person_folder,
     # Separate files into reference (ref) and selfie categories
     ref_files = [f for f in files if '_1.jpg' in f]
     selfie_files = [f for f in files if '_2.jpg' in f]
+    pdb.set_trace()
 
     if len(ref_files) != 2 or len(selfie_files) != 2:
-        logger.error(f"Invalid folder structure in {person_folder}: {files}")
-        return [], [], [], []
+        print(f"Invalid folder structure in {person_folder}: {files}")
+        return
 
     # Extract pairs
     pairs = [
@@ -166,19 +190,29 @@ def process_person_folder(person_folder,
         (os.path.join(person_folder, ref_files[1]), os.path.join(person_folder, selfie_files[1]))   # Pair 4
     ]
     pair_labels = [0, 0, 1, 1]  # Pairs 1 and 2 are mismatches; Pairs 3 and 4 are matches
-
+    pdb.set_trace()
 
     # Generate embeddings and labels
     for (ref_path, selfie_path), label in zip(pairs, pair_labels):
-        ref_embedding = get_face_embedding(ref_path, transform, model, device)
-        selfie_embedding = get_face_embedding(selfie_path, transform, model, device)
+        ref_embedding = get_face_embedding(ref_path)
+        selfie_embedding = get_face_embedding(selfie_path)
         embeddings.append((ref_embedding, selfie_embedding))
-        print(f"label: {label}")
         labels.append(label)
         folder_names.append(os.path.basename(person_folder))
         pairs_list.append(f"[{os.path.basename(ref_path)}, {os.path.basename(selfie_path)}]")
 
-    return embeddings, labels, folder_names, pairs_list
+
+def process_all_folders(root_dir, output_csv="fv_results.csv"):
+    embeddings, labels, folder_names, pairs_list = [], [], [], []
+
+    for folder_name in os.listdir(root_dir):
+        folder_path = os.path.join(root_dir, folder_name)
+        # pdb.set_trace()
+        if os.path.isdir(folder_path):
+            process_person_folder(folder_path, embeddings, labels, folder_names, pairs_list)
+
+    # Evaluate all pairs and log results
+    evaluate_and_log_pairs(embeddings, labels, folder_names, pairs_list, threshold=0.96, output_csv=output_csv)
 
 
 if __name__ == "__main__":
@@ -189,38 +223,9 @@ if __name__ == "__main__":
     device = torch.device(config.device if torch.cuda.is_available() else "cpu")
     logger.info(f"Available Device: {device}")
 
-    # Image transformations
-    transform = transforms.Compose([
-        transforms.Resize((config.train.transform.resize[0],
-                           config.train.transform.resize[1])),
-        transforms.ToTensor(),
-        transforms.Normalize(config.train.transform.normalize.mean,
-                             config.train.transform.normalize.std)
-    ])
-
     checkpoint_path = os.path.join(config.inference.weight_dir, config.inference.checkpoint_name)
-    model = load_model(device, checkpoint_path)
+    load_model(device, checkpoint_path)
 
-
+    # Example usage
     test_dir = config.inference.test_dir
-
-    embeddings, labels, folder_names, pairs_list = [], [], [], []
-    embeddings, labels, folder_names, pairs_list = process_person_folder(test_dir,
-                                                                         embeddings,
-                                                                         labels,
-                                                                         folder_names,
-                                                                         pairs_list,
-                                                                         model,
-                                                                         transform,
-                                                                         device)
-
-    if all(list_ for list_ in [embeddings, labels, folder_names, pairs_list]):
-        output_csv_path = os.path.join(test_dir, config.inference.output_csv)
-        evaluate_and_log_pairs(embeddings,
-                            labels,
-                            folder_names,
-                            pairs_list,
-                            threshold=config.inference.opt_threshold,
-                            output_csv=output_csv_path)
-    else:
-        logger.warning("can not evaluate images.")
+    process_all_folders(test_dir, output_csv="fv_results_25_day.csv")
