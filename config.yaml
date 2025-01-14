@@ -3,7 +3,7 @@ data_dir: "/hdd_dr/dataset/VAP/project/FV/v2/train/javaneh_small_ekyc_train"
 batch_size: 64
 num_negatives: 8
 num_epochs: 65
-train_index: 29
+train_index: 1
 checkpoint_abs_path: "checkpoints"
 learning_rate: 0.001
 weight_decay: 0.00001
