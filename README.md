@@ -12,9 +12,12 @@ The implementation builds upon the [facenet-pytorch](https://github.com/timesler
 ## Features
 - Fine-tuned FaceNet model for face verification.  
 - **Tuplet Loss**: Uses one positive sample and multiple negative samples for robust learning.  
-- **Hard Negative Mining**: Instead of randomly selecting negatives, the k hardest negatives are dynamically selected during training to enhance learning efficiency.  
-- Embedding learning to enhance discriminative power for facial distances.  
-- Optimized for challenging scenarios where faces are captured at close range.  
+- **Hard Negative Mining**: During training, 
+1. we first select `random negative samples` in the dataset. 
+2. In the loss function, we then pick the `k hardest negatives` from these random selections based on their difficulty, meaning the ones most similar to the anchor. This helps the model focus on the most challenging examples to improve learning efficiency.
+
+- The model learns to create embeddings that can better distinguish between similar faces, improving its ability to measure facial distances accurately.
+- This approach is especially useful when dealing with difficult scenarios, such as when faces are captured at close range, where subtle differences are harder to detect.
 
 
 ### What is Tuplet Loss?
