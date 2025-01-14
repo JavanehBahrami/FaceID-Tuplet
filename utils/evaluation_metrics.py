@@ -4,7 +4,6 @@ from sklearn.metrics import (precision_score,
                              confusion_matrix)
 
 
-
 def calculate_metrics(y_true, y_pred):
     if len(y_true) == 0 or len(y_pred) == 0:
         return 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
