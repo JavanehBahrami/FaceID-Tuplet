@@ -16,7 +16,7 @@ The implementation builds upon the [facenet-pytorch](https://github.com/timesler
 
 
 
-<img src="docs/images/multi_demo_view.jpg" alt="Multi View Demo Images" width="100%" height="1409" />
+<img src="docs/images/multi_demo_view.jpg" alt="Multi View Demo Images" width="100%" />
 
 <!-- <img src="multi_demo_view.jpg" alt="Multi View Demo Images" height="1409" /> -->
 
