@@ -65,18 +65,24 @@ The combination of multiple negatives and hard negative mining allows for more d
 The directory structure of this repository is organized as follows:
 
 ```bash
-root:
-    |__ finetune.py
-    |__ inference.py
-    |__ weight/
-    |__ docs/
-    |__ readme.md
+Project Root:
+├── finetune.py          # Script for fine-tuning the model
+├── demo.py              # Script for running inference
+├── weight/              # Directory containing pre-trained model weights
+├── utils                # Utility scripts (e.g., for datagenerator, loss function)
+├── docs/                # Documentation folder
+│   ├── images/          # Images used in documentation
+│   │   ├── test/        # Test images
+│   │   └── test_result/ # Results from testing
+├── readme.md            # Project documentation (this file)
+├── LICENSE
+
 
 ```
 
 
 ### Dataset
-I used a custom dataset for training, which consists of images where faces are typically close to the camera, and the height of the images is larger than the width.
+I used a custom dataset for `training`, which consists of images where faces are typically close to the camera, and the height of the images is larger than the width.
 The dataset is composed of the following:
 
 - eKYC images: 12,018 IDs and 102,147 images in total.
@@ -207,3 +213,23 @@ The current version focuses on the core functionality, including fine-tuning Fac
 I am actively developing and improving this project to enhance model performance, optimize processing pipelines, and extend its capabilities.
 
 **Contributions and feedback are welcome as I continue to improve this project.**
+
+
+
+## License
+
+This project is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+
+Copyright (c) 2025, Saeedeh (Javaneh) Bahrami
+
+You are free to:
+
+- Share: Copy, redistribute, and use the material (code) in any medium, mode, or format.
+- Adapt: Remix, transform, or build upon the material, including for commercial purposes.
+
+Under the following conditions:
+
+- Attribution: You must give appropriate credit to the original author (Saeedeh (Javaneh) Bahrami), provide a link to the license, and indicate if changes were made. You may do this in any reasonable manner, but not in any way that suggests the author endorses you or your use.
+- No additional restrictions: You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+
+For more details, please refer to the official Creative Commons website: https://creativecommons.org/licenses/by/4.0/

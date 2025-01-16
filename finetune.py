@@ -3,7 +3,6 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 import yaml
-import pdb
 
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
@@ -195,6 +194,3 @@ if __name__ == "__main__":
     
     train_model(config, model, checkpoint_abs_path)
     logger.info("<><><>  Training is Done   <><><>")
-
-
-

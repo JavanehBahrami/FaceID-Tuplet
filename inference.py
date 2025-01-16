@@ -5,8 +5,6 @@ import pandas as pd
 import csv
 import matplotlib.pyplot as plt
 import yaml
-import string
-import pdb
 
 from torchvision import transforms
 from box import Box
@@ -43,6 +41,7 @@ def get_face_embedding(image_path, transform, model, device):
 
     with torch.no_grad():
         face_embedding = model(img_tensor).cpu()
+
     return face_embedding
 
 
@@ -96,16 +95,13 @@ def evaluate_and_log_pairs(embeddings, labels, folder_names, pairs_list, thresho
     """
     print("\n--- Evaluating Pairs with Threshold: {:.2f} ---".format(threshold))
     
-    # Temporary storage for rows
     rows = []
     print(f"--- labels: {labels}")
     for idx, ((embedding1, embedding2), label, folder_name, str_pair) in enumerate(zip(embeddings, labels, folder_names, pairs_list)):
         elements = str_pair.strip('[]').split(', ')
-        # Convert to a tuple
         pair = tuple(elements)
         if embedding1 is None or embedding2 is None:
             print(f"Skipping pair {idx + 1}: Missing embedding(s).")
-                    # Store the row
             rows.append([folder_name, pair[0], "Missing Embedding(s)", "N/A", "N/A", label])
             rows.append([folder_name, pair[1], "Missing Embedding(s)", "N/A", "N/A", label])
             continue
@@ -121,8 +117,6 @@ def evaluate_and_log_pairs(embeddings, labels, folder_names, pairs_list, thresho
         # Determine conflict
         conflict = 1 if fv_prediction != ground_truth else 0
 
-
-        # pdb.set_trace()
         rows.append([folder_name, pair[0], pair[1], fv_prediction, ground_truth, conflict, label])
         print(f"Folder: {folder_name}, Pairs: {pair[0]}, Pairs: {pair[1]}, FV Prediction: {fv_prediction}, Ground Truth: {ground_truth}, Conflict: {conflict}, label: {label}")
 
