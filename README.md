@@ -15,7 +15,22 @@ The implementation builds upon the [facenet-pytorch](https://github.com/timesler
 </p> -->
 
 
-<img src="docs/images/multi_demo_view.jpg" alt="Multi View Demo Images" width="100%" />
+We utilized the `CelebA` dataset to evaluate and visualize the verification results of our model. 
+CelebA is a large-scale face dataset containing images of celebrities, with annotations for attributes, landmarks, and identities.
+
+To prepare the images for evaluation:
+
+- The raw images from the CelebA dataset were first processed using the `MTCNN` (Multi-task Cascaded Convolutional Networks) face detection model. This step was used to detect and crop faces from the raw images.
+- These cropped face images were then used in the verification pipeline for evaluation.
+
+## Visualization
+The visualized results include only the raw images from the CelebA dataset, not the cropped faces.
+This approach ensures clarity when presenting the original image context in verification visualizations.
+
+- The CelebA dataset can be accessed [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).
+- You can find an implementation of MTCNN [MTCNN](https://github.com/ipazc/mtcnn)
+
+<img src="docs/images/test_result/multi_demo_view.jpg" alt="Multi View Demo Images" width="100%" />
 
 
 ## Features

@@ -138,9 +138,9 @@ if __name__ == "__main__":
                                    config.inference.checkpoint_name)
     model = load_model(device, checkpoint_path)
 
-    # image_path1 = "docs/images/test/BenicioDelToro.jpg"
-    image_path1 = "docs/images/test/NicoleKidman.jpg"
-    image_path2 = "docs/images/test/AmyAdams.jpg"
+    # image_path1 = "docs/images/test/ID5239_000043.jpg"
+    image_path1 = "docs/images/test/ID5230_000042.jpg"
+    image_path2 = "docs/images/test/ID5230_002825.jpg"
 
     threshold = config.inference.opt_threshold
     evaluate_two_images(image_path1,
