@@ -7,6 +7,30 @@ The implementation builds upon the [facenet-pytorch](https://github.com/timesler
 
 - Yu, Baosheng, and Dacheng Tao. ["Deep metric learning with tuplet margin loss."](https://openaccess.thecvf.com/content_ICCV_2019/html/Yu_Deep_Metric_Learning_With_Tuplet_Margin_Loss_ICCV_2019_paper.html) *Proceedings of the IEEE/CVF International Conference on Computer Vision*, 2019.  
 
+<!-- 
+<p align="center">
+  <img src="docs/images/Demo1.jpg" width="30%" />
+  <img src="docs/images/Demo3.jpg" width="30%" />
+  <img src="docs/images/Demo2.jpg" width="30%" />
+</p> -->
+
+
+We utilized the `CelebA` dataset to evaluate and visualize the verification results of our model. 
+CelebA is a large-scale face dataset containing images of celebrities, with annotations for attributes, landmarks, and identities.
+
+To prepare the images for evaluation:
+
+- The raw images from the CelebA dataset were first processed using the `MTCNN` (Multi-task Cascaded Convolutional Networks) face detection model. This step was used to detect and crop faces from the raw images.
+- These cropped face images were then used in the verification pipeline for evaluation.
+
+## Visualization
+The visualized results include only the raw images from the CelebA dataset, not the cropped faces.
+This approach ensures clarity when presenting the original image context in verification visualizations.
+
+- The CelebA dataset can be accessed [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).
+- You can find an implementation of MTCNN [MTCNN](https://github.com/ipazc/mtcnn)
+
+<img src="docs/images/test_result/multi_demo_view.jpg" alt="Multi View Demo Images" width="100%" />
 
 
 ## Features
@@ -41,18 +65,24 @@ The combination of multiple negatives and hard negative mining allows for more d
 The directory structure of this repository is organized as follows:
 
 ```bash
-root:
-    |__ finetune.py
-    |__ inference.py
-    |__ weight/
-    |__ docs/
-    |__ readme.md
+Project Root:
+├── finetune.py          # Script for fine-tuning the model
+├── demo.py              # Script for running inference
+├── weight/              # Directory containing pre-trained model weights
+├── utils                # Utility scripts (e.g., for datagenerator, loss function)
+├── docs/                # Documentation folder
+│   ├── images/          # Images used in documentation
+│   │   ├── test/        # Test images
+│   │   └── test_result/ # Results from testing
+├── readme.md            # Project documentation (this file)
+├── LICENSE
+
 
 ```
 
 
 ### Dataset
-I used a custom dataset for training, which consists of images where faces are typically close to the camera, and the height of the images is larger than the width.
+I used a custom dataset for `training`, which consists of images where faces are typically close to the camera, and the height of the images is larger than the width.
 The dataset is composed of the following:
 
 - eKYC images: 12,018 IDs and 102,147 images in total.
@@ -104,14 +134,15 @@ Therefore, we monitor various metrics during training to ensure that the model m
 
 
 ### Download pretrained weigths
-The checkpoint for the training using triplet loss is located in the `weight` directory.
+The checkpoint obtained from training with the triplet loss is located in the `weight` directory.
+
 
 ### Inference : Finding Optimal Threshold based on distance similarity
 In face verification, we determine the similarity between face embeddings and classify whether two images belong to the same person. 
 
 This process involves:
 
-- Embedding Extraction: Use MTCNN for face detection and InceptionResnetV1 for face embeddings extraction.
+- Embedding Extraction: Use `MTCNN` for face detection and InceptionResnetV1 for face embeddings extraction.
 - Distance Calculation: Compute the Euclidean distance between face embeddings for pairs of images.
 - Threshold Search: Evaluate a range of thresholds (0.1 to 1.5) to determine if pairs match or not.
 - Metrics: For each threshold, calculate the False Positive Rate (FPR), False Negative Rate (FNR), and weighted cost (FPR: 0.8, FNR: 0.2).
@@ -153,6 +184,7 @@ To fine tune the model, run this:
 ```bash
 python3 finetune.py
 ```
+
 #### Training Details
 - Model: Fine-tuned FaceNet using PyTorch.
 - Loss Function: Tuplet Loss with one positive and multiple negative samples (here, 8 negative samples are selected).
@@ -171,35 +203,33 @@ python3 finetune.py
 To verify two face images, run this:
 
 ```bash
-python3 inference.py
+python3 demo.py
 ```
 
+## Project Status
+This is the `first version` of the code, and it represents the initial implementation of the face verification system. 
+The current version focuses on the core functionality, including fine-tuning FaceNet with Tuplet Loss and evaluating performance using the CelebA dataset.
+
+I am actively developing and improving this project to enhance model performance, optimize processing pipelines, and extend its capabilities.
+
+**Contributions and feedback are welcome as I continue to improve this project.**
 
 
 
-bash
-Copy code
-python verify.py --img1 /path/to/image1.jpg --img2 /path/to/image2.jpg
+## License
 
-Results
-The fine-tuned model achieves robust face verification performance, especially for faces captured at close range.
+This project is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
 
-Example:
-Positive Pair: Match
-Negative Pair: Not a Match
-Performance metrics:
+Copyright (c) 2025, Saeedeh (Javaneh) Bahrami
 
-Metric	Value
-Accuracy	98.5%
-Precision	97.8%
-Recall	98.2%
-Contributing
-Contributions are welcome! Please fork this repository and submit a pull request with your changes.
+You are free to:
 
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
+- Share: Copy, redistribute, and use the material (code) in any medium, mode, or format.
+- Adapt: Remix, transform, or build upon the material, including for commercial purposes.
 
-Acknowledgements
-FaceNet: A Unified Embedding for Face Recognition and Clustering
-PyTorch
-facenet-pytorch
+Under the following conditions:
+
+- Attribution: You must give appropriate credit to the original author (Saeedeh (Javaneh) Bahrami), provide a link to the license, and indicate if changes were made. You may do this in any reasonable manner, but not in any way that suggests the author endorses you or your use.
+- No additional restrictions: You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+
+For more details, please refer to the official Creative Commons website: https://creativecommons.org/licenses/by/4.0/
