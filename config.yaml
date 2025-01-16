@@ -25,4 +25,5 @@ inference:
   test_dir: "docs/images/test"
   opt_threshold: 0.9422
   output_csv: "fv_results.csv"
+  fd_model_run: True
 

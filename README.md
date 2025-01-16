@@ -8,6 +8,13 @@ The implementation builds upon the [facenet-pytorch](https://github.com/timesler
 - Yu, Baosheng, and Dacheng Tao. ["Deep metric learning with tuplet margin loss."](https://openaccess.thecvf.com/content_ICCV_2019/html/Yu_Deep_Metric_Learning_With_Tuplet_Margin_Loss_ICCV_2019_paper.html) *Proceedings of the IEEE/CVF International Conference on Computer Vision*, 2019.  
 
 
+<p align="center">
+  <img src="docs/images/Demo1.jpg" width="30%" />
+  <img src="docs/images/Demo3.jpg" width="30%" />
+  <img src="docs/images/Demo2.jpg" width="30%" />
+</p>
+
+
 
 ## Features
 - Fine-tuned FaceNet model for face verification.  
@@ -104,14 +111,15 @@ Therefore, we monitor various metrics during training to ensure that the model m
 
 
 ### Download pretrained weigths
-The checkpoint for the training using triplet loss is located in the `weight` directory.
+The checkpoint obtained from training with the triplet loss is located in the `weight` directory.
+
 
 ### Inference : Finding Optimal Threshold based on distance similarity
 In face verification, we determine the similarity between face embeddings and classify whether two images belong to the same person. 
 
 This process involves:
 
-- Embedding Extraction: Use MTCNN for face detection and InceptionResnetV1 for face embeddings extraction.
+- Embedding Extraction: Use `MTCNN` for face detection and InceptionResnetV1 for face embeddings extraction.
 - Distance Calculation: Compute the Euclidean distance between face embeddings for pairs of images.
 - Threshold Search: Evaluate a range of thresholds (0.1 to 1.5) to determine if pairs match or not.
 - Metrics: For each threshold, calculate the False Positive Rate (FPR), False Negative Rate (FNR), and weighted cost (FPR: 0.8, FNR: 0.2).
@@ -174,32 +182,4 @@ To verify two face images, run this:
 python3 inference.py
 ```
 
-
-
-
-bash
-Copy code
-python verify.py --img1 /path/to/image1.jpg --img2 /path/to/image2.jpg
-
-Results
-The fine-tuned model achieves robust face verification performance, especially for faces captured at close range.
-
-Example:
-Positive Pair: Match
-Negative Pair: Not a Match
-Performance metrics:
-
-Metric	Value
-Accuracy	98.5%
-Precision	97.8%
-Recall	98.2%
-Contributing
-Contributions are welcome! Please fork this repository and submit a pull request with your changes.
-
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-Acknowledgements
-FaceNet: A Unified Embedding for Face Recognition and Clustering
-PyTorch
-facenet-pytorch
+#### Evaluation image
