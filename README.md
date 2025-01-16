@@ -178,6 +178,7 @@ To fine tune the model, run this:
 ```bash
 python3 finetune.py
 ```
+
 #### Training Details
 - Model: Fine-tuned FaceNet using PyTorch.
 - Loss Function: Tuplet Loss with one positive and multiple negative samples (here, 8 negative samples are selected).
@@ -196,7 +197,13 @@ python3 finetune.py
 To verify two face images, run this:
 
 ```bash
-python3 inference.py
+python3 demo.py
 ```
 
-#### Evaluation image
+## Project Status
+This is the `first version` of the code, and it represents the initial implementation of the face verification system. 
+The current version focuses on the core functionality, including fine-tuning FaceNet with Tuplet Loss and evaluating performance using the CelebA dataset.
+
+I am actively developing and improving this project to enhance model performance, optimize processing pipelines, and extend its capabilities.
+
+**Contributions and feedback are welcome as I continue to improve this project.**
