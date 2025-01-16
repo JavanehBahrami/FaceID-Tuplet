@@ -7,18 +7,15 @@ The implementation builds upon the [facenet-pytorch](https://github.com/timesler
 
 - Yu, Baosheng, and Dacheng Tao. ["Deep metric learning with tuplet margin loss."](https://openaccess.thecvf.com/content_ICCV_2019/html/Yu_Deep_Metric_Learning_With_Tuplet_Margin_Loss_ICCV_2019_paper.html) *Proceedings of the IEEE/CVF International Conference on Computer Vision*, 2019.  
 
-
+<!-- 
 <p align="center">
   <img src="docs/images/Demo1.jpg" width="30%" />
   <img src="docs/images/Demo3.jpg" width="30%" />
   <img src="docs/images/Demo2.jpg" width="30%" />
-</p>
-
+</p> -->
 
 
 <img src="docs/images/multi_demo_view.jpg" alt="Multi View Demo Images" width="100%" />
-
-<!-- <img src="multi_demo_view.jpg" alt="Multi View Demo Images" height="1409" /> -->
 
 
 ## Features
