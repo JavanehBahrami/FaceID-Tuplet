@@ -15,6 +15,8 @@ The implementation builds upon the [facenet-pytorch](https://github.com/timesler
 </p>
 
 
+<img src="multi_demo_view.jpg" width="30%" />
+
 
 ## Features
 - Fine-tuned FaceNet model for face verification.  
